@@ -3,7 +3,7 @@
   <div class="bg-transparent">
     <section aria-labelledby="features-heading" class="relative  flex flex-col md:flex-row md:items-end h-full">
       <div class="relative bg-transparent aspect-h-2 aspect-w-3 overflow-hidden sm:aspect-w-5 lg:aspect-none w-full h-96 md:h-[32rem] md:w-1/2 ">
-          <img :src="props.movie.poster_path" alt="Black leather journal with silver steel disc binding resting on wooden shelf with machined steel pen." class="animate-[wiggle_1s_ease-in-out_1] top-0 md:absolute h-full w-full object-center"/>
+          <img :src="resolveImagePath(props.movie.poster_path)" alt="Black leather journal with silver steel disc binding resting on wooden shelf with machined steel pen." class="animate-[wiggle_1s_ease-in-out_1] top-0 md:absolute h-full w-full object-center"/>
       </div>
       <div class="h-full md:absolute right-0 bg-white md:w-1/2 flex flex-col justify-end  order-2">
         <div class="h-[50%]"></div>
@@ -99,7 +99,9 @@
 <script setup>
 
 import DefaultLayaout from "@/App.vue";
-
+const resolveImagePath=(imagePath)=>{
+  return `${import.meta.env.VITE_APP_MOVIES_BASE_IMAGE}/${imagePath}`
+};
 const features = [
   {
     name: 'Durable',

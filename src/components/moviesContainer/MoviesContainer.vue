@@ -5,7 +5,7 @@
       <div class="grid  grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8 ">
         <a v-for="movie in movies" :key="movie.id"  @click="functionModal(movie)" class="group transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 hover:shadow-2xl duration-300">
           <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden  sm:aspect-h-3 sm:aspect-w-2">
-            <img :src="movie.poster_path" :alt="movie.imageAlt" class="h-full w-full object-cover object-center"/>
+            <img :src="resolveImagePath(movie.poster_path)" :alt="movie.imageAlt" class="h-full w-full object-cover object-center"/>
           </div>
           <div class="relative transition-all bg-white p-4 h-28 flex flex-col justify-between">
             <div class=" flex flex-col text-base font-medium text-gray-900">
@@ -35,13 +35,43 @@
 
 <script setup>
 
-const {ThemoviedbApi} = import('../../core/provider/themoviedb/api')
-
-const tmovieApi=new ThemoviedbApi();
-
-const movies=tmovieApi.getDefaultMovies();
 
 
+
+
+
+import {ref} from "vue";
+
+class ThemoviedbApi {
+  static getDefaultMovies = () => new Promise((resolve, reject) => {
+
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${import.meta.env.VITE_APP_MOVIES_API_KEY}`,
+      }
+    };
+
+
+    fetch(`${import.meta.env.VITE_APP_BASE_URL_MOVIE_API}/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`, options)
+        .then(response => response.json())
+        .then(content=>resolve(content.results))
+        .catch(err => reject(err));
+  });
+  static imageResolvePath=(imagePath)=>{
+    return `${import.meta.env.VITE_APP_MOVIES_BASE_IMAGE}/${imagePath}`
+  }
+}
+
+
+
+const movies=  ref([]);
+const resolveImagePath=ThemoviedbApi.imageResolvePath;
+
+ThemoviedbApi.getDefaultMovies().then((data)=>{
+  movies.value=data;
+},(err)=>console.error(err));
 
 const props = defineProps(['open','movie'])
 const emit = defineEmits(['openModal', 'movie'])
